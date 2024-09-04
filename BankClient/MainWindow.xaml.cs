@@ -31,7 +31,7 @@ namespace BankClient
             // is what hides the RPC stuff!
             var tcp = new NetTcpBinding();
             //Set the URL and create the connection!
-            var URL = "net.tcp://0.0.0.0:8100/BankDataService";
+            var URL = "net.tcp://localhost:8100/BankDataService";
             var chanFactory = new ChannelFactory<DatabaseInterface>(tcp, URL);
             db = chanFactory.CreateChannel();
             // Also, tell me how many entries are in the DB.
