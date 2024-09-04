@@ -35,6 +35,8 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -46,15 +48,17 @@
   <ItemGroup>
     <Compile Include="DatabaseInterface.cs" />
     <Compile Include="DatabaseServer.cs" />
+    <Compile Include="IndexOutOfRange.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BankDLL\BankDLL.csproj">
+    <ProjectReference Include="..\BankDLL\BankLib.csproj">
       <Project>{07ebd15b-d02e-4cde-90b9-e7b735745d5c}</Project>
-      <Name>BankDLL</Name>
+      <Name>BankLib</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
