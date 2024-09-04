@@ -1,0 +1,31 @@
+﻿<Window x:Class="BankClient.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BankClient"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Image x:Name="UserIcon" HorizontalAlignment="Left" Height="210" Margin="52,26,0,0" VerticalAlignment="Top" Width="210" OpacityMask="Black"/>
+        <TextBox x:Name="fNameBox" HorizontalAlignment="Left" Height="20" Margin="345,57,0,0" TextWrapping="NoWrap" Text="First Name" VerticalAlignment="Top" Width="252"/>
+        <TextBox x:Name="lNameBox" HorizontalAlignment="Left" Height="20" Margin="345,87,0,0" TextWrapping="NoWrap" Text="Last Name" VerticalAlignment="Top" Width="252"/>
+        <TextBox x:Name="acctNoBox" HorizontalAlignment="Left" Height="20" Margin="345,117,0,0" TextWrapping="NoWrap" Text="Account Number" VerticalAlignment="Top" Width="252"/>
+        <TextBox x:Name="pinBox" HorizontalAlignment="Left" Height="20" Margin="345,147,0,0" TextWrapping="NoWrap" Text="PIN" VerticalAlignment="Top" Width="252"/>
+        <TextBox x:Name="balanceBox" HorizontalAlignment="Left" Height="20" Margin="345,177,0,0" TextWrapping="NoWrap" Text="Balance" VerticalAlignment="Top" Width="252"/>
+        <TextBox x:Name="IndexBox" HorizontalAlignment="Left" Height="20" Margin="293,342,0,0" TextWrapping="Wrap" Text="INDEX" VerticalAlignment="Top" Width="120"/>
+        <Button x:Name="IndexButton" Content="Enter" HorizontalAlignment="Left" Height="20" Margin="436,342,0,0" VerticalAlignment="Top" Width="70" Click="IndexButton_Click"/>
+        <Label x:Name="NoItems" Content="Total Items: " HorizontalAlignment="Left" Margin="293,311,0,0" VerticalAlignment="Top"/>
+        <Rectangle Fill="Black" Margin="398,-123,401,-255" Stroke="Black" Width="1" RenderTransformOrigin="0.5,0.5">
+            <Rectangle.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="90"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+
+    </Grid>
+</Window>
