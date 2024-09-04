@@ -1,5 +1,14 @@
-﻿using System;
+﻿
+/*------------------------------------------------*
+ * Module: BankDatabase                           *
+ * Description: The database of the bank          *
+ * Author: Jauhar                                 *
+ * ID: 21494299                                   *
+ *------------------------------------------------*/
+
+using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,7 +19,9 @@ namespace BankDLL
     {
         private readonly List<AccountData> _accounts;
 
-        public BankDatabase()
+        public static BankDatabase Instance { get; } = new BankDatabase();
+
+        private BankDatabase()
         {
             _accounts = new List<AccountData>();
 
@@ -20,7 +31,7 @@ namespace BankDLL
             {
                 var temp = new AccountData();
 
-                generator.GetNextAccount(out temp.pin, out temp.acctNo, out temp.firstName, out temp.lastName, out temp.balance);
+                generator.GetNextAccount(out temp.pin, out temp.acctNo, out temp.firstName, out temp.lastName, out temp.balance, out temp.icon);
 
                 _accounts.Add(temp);
             }
@@ -49,6 +60,11 @@ namespace BankDLL
         public int GetBalanceByIndex(int index)
         {
             return _accounts[index].balance;
+        }
+
+        public Bitmap GetIconByIndex(int index)
+        {
+            return _accounts[index].icon;
         }
 
         public int GetNumRecords() 

@@ -1,9 +1,10 @@
-﻿/*
- * Module: DatabaseGenerator
- * Description: The module responsible to auto-generate 
- *              bank data.
- * Author: Muhammad Jauhar Qolbi
- */
+﻿
+/*------------------------------------------------*
+ * Module: DatabaseGenerator                      *
+ * Description: Generates data                    *
+ * Author: Jauhar                                 *
+ * ID: 21494299                                   *
+ *------------------------------------------------*/
 
 using System;
 using System.Collections.Generic;
@@ -35,7 +36,6 @@ namespace BankDLL
         {
             _icons = new List<Bitmap>();
             // Generate a few really basic icons
-            // Probably not the best way to do it, but it works :)
             for (var i = 0; i < 10; i++)
             {
                 var image = new Bitmap(64, 64);
@@ -60,13 +60,14 @@ namespace BankDLL
 
         private Bitmap GetIcon() => _icons[_random.Next(_icons.Count)];
 
-        public void GetNextAccount(out uint pin, out uint acctNo, out string firstName, out string lastName, out int balance) 
+        public void GetNextAccount(out uint pin, out uint acctNo, out string firstName, out string lastName, out int balance, out Bitmap icon) 
         {
             pin = GetPIN();
             acctNo = GetAcctNo();
             firstName = GetFirstName();
             lastName = GetLastName();
             balance = GetBalance();
+            icon = GetIcon();
         }
     }
 }
