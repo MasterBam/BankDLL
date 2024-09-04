@@ -19,7 +19,6 @@ using BankDLL;
 namespace BankServer
 {
     [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, UseSynchronizationContext= false)]
-
     internal class DatabaseServer : DatabaseInterface
     {
         private readonly BankDatabase _database = BankDatabase.Instance;

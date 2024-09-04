@@ -28,8 +28,7 @@ namespace BankServer
             //Create the host + binding server to implementation of server
             var host = new ServiceHost(typeof(DatabaseServer));
 
-            host.AddServiceEndpoint(typeof(DatabaseInterface), tcp, 
-            "net.tcp://0.0.0.0:8100/BankDataService");
+            host.AddServiceEndpoint(typeof(DatabaseInterface), tcp, "net.tcp://0.0.0.0:8100/BankDataService");
 
             //open server
             host.Open();
