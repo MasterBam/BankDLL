@@ -76,11 +76,6 @@ namespace BankClient
                 // If any other fault exceptions are caught
                 MessageBox.Show("A general fault occurred: " + faultEx.Message);
             }
-            catch (Exception ex)
-            {
-                // Catch all other exceptions that may occur (e.g., communication issues)
-                MessageBox.Show("An error occurred: " + ex.Message);
-            }
         }
     }
 }
