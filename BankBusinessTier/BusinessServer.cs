@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 
 namespace BankBusinessTier
 {
+    [ServiceBehavior(IncludeExceptionDetailInFaults = true, ConcurrencyMode = ConcurrencyMode.Multiple, UseSynchronizationContext = false)]
     internal class BusinessServer : BusinessInterface
     {
         private DatabaseInterface dbServer;
@@ -55,39 +56,29 @@ namespace BankBusinessTier
             dbServer.GetValuesForEntry(index, out acctNo, out pin, out fName, out lName, out bal, out icon);
         }
 
-        public void GetSearchResult(string search, out uint acctNo, out uint pin, out string fName, out string lName, out int bal, out Bitmap icon)
+        public int GetSearchResult(string search)
         {
-            acctNo = 0;
-            pin = 0;
-            fName = null;
-            lName = null;
-            bal = 0;
-            icon = null;
-
             int numEntries = dbServer.GetNumEntries();
+
+            uint acct;
+            uint aPin;
+            string first = null;
+            string last = null;
+            int balance = 0;
+            Bitmap pIcon = null;
 
             for (int i = 0; i < numEntries; i++)
             {
-                uint acct;
-                uint aPin;
-                string first;
-                string last;
-                int balance;
-                Bitmap pIcon;
+
 
                 dbServer.GetValuesForEntry(i, out acct, out aPin, out first, out last, out balance, out pIcon);
                 if (last == search)
                 {
-                    acctNo = acct;
-                    pin = aPin;
-                    fName = first; lName = last;
-                    bal = balance;
-                    icon = pIcon;
-                    break;
+                    return i;
                 }
             }
 
-            if (fName == null)
+            if (first is null)
             {
                 Console.WriteLine("Client attempt to search a non-existent record");
                 throw new FaultException<SearchNotFound>(
@@ -95,7 +86,7 @@ namespace BankBusinessTier
                     new FaultReason("Non-existent record"));
             }
 
-            Thread.Sleep(5000);
+            return 0;
         }
     }
 }

@@ -24,7 +24,7 @@ namespace BankServer
 
             //create tcp binding
             var tcp = new NetTcpBinding();
-            
+
             //Create the host + binding server to implementation of server
             var host = new ServiceHost(typeof(DatabaseServer));
 

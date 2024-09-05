@@ -36,10 +36,12 @@ namespace BankClient
             // This is a factory that generates remote connections to our remote class. This 
             // is what hides the RPC stuff!
             var tcp = new NetTcpBinding();
+
             //Set the URL and create the connection!
             var URL = "net.tcp://localhost:8200/BankBusinessService";
             var chanFactory = new ChannelFactory<BusinessInterface>(tcp, URL);
             db = chanFactory.CreateChannel();
+
             // Also, tell me how many entries are in the DB.
             NoItems.Content = "Total Items: " + db.GetNumEntries();
             Load(0);
@@ -58,17 +60,19 @@ namespace BankClient
             }
         }
 
-        private async void SearchButthon_Click(object sender, RoutedEventArgs e)
-        {
+        //private async void SearchButthon_Click(object sender, RoutedEventArgs e)
+        //{
 
-            search = SearchBox.Text;
-            Task<AccountData> task = new Task<AccountData>(SearchDB);
-            task.Start();
-            statusLabel.Content = "Searching starts.....";
-            AccountData account = await task;
-            UpdateGui(account);
-            statusLabel.Content = "Searching ends.....";
-        }
+        //    search = SearchBox.Text;
+        //    Task<int> task = new Task<int>(SearchDB);
+        //    task.Start();
+        //    statusLabel.Content = "Searching starts.....";
+        //    int account = await task;
+
+        //    Load(account);
+        //    task.Dispose();
+        //    statusLabel.Content = "Searching ends.....";
+        //}
 
         private void Load(int index)
         {
@@ -95,32 +99,28 @@ namespace BankClient
             }
         }
 
-        private AccountData SearchDB()
-        {
-            try
-            {
-                AccountData acct = new AccountData();
-                db.GetSearchResult(search, out acct.acctNo, out acct.pin, out acct.firstName, out acct.lastName, out acct.balance, out acct.icon);
-                return acct;
-            }
-            catch(FaultException<SearchNotFound> exception)
-            {
-                MessageBox.Show(exception.Detail.Fault);
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show("Something went wrong: " + e.Message);
-            }
-            return null;
-        }
+        //private int SearchDB()
+        //{
+        //    try
+        //    {
+        //        AccountData acct = new AccountData();
+                
+        //        return db.GetSearchResult(search);
+        //    }
+        //    catch(FaultException<SearchNotFound> exception)
+        //    {
+        //        MessageBox.Show(exception.Detail.Fault);
+        //    }
+        //    return 0;
+        //}
 
-        private void UpdateGui(AccountData acct)
-        {
-            fNameBox.Text = acct.firstName;
-            lNameBox.Text = acct.lastName;
-            balanceBox.Text = acct.balance.ToString("C");
-            acctNoBox.Text = acct.acctNo.ToString();
-            pinBox.Text = acct.pin.ToString("D4");
-        }
+        //private void UpdateGui(AccountData acct)
+        //{
+        //    fNameBox.Text = acct.firstName;
+        //    lNameBox.Text = acct.lastName;
+        //    balanceBox.Text = acct.balance.ToString("C");
+        //    acctNoBox.Text = acct.acctNo.ToString();
+        //    pinBox.Text = acct.pin.ToString("D4");
+        //}
     }
 }

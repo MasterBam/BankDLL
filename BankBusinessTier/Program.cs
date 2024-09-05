@@ -21,7 +21,7 @@ namespace BankBusinessTier
         static void Main(string[] args)
         {
             //Start the server
-            Console.WriteLine("Welcome:: Data Service initiation...");
+            Console.WriteLine("Welcome:: Business Service initiation...");
 
             //create tcp binding
             var tcp = new NetTcpBinding();
