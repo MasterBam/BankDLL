@@ -33,7 +33,9 @@ namespace BankServer
             if (index < 0 || index >= _database.GetNumRecords())
             {
                 Console.WriteLine("Client attempt to access entry out of range");
-                throw new FaultException<IndexOutOfRange>(new IndexOutOfRange { Fault = "Index not within range"});
+                throw new FaultException<IndexOutOfRange>(
+                    new IndexOutOfRange { Fault = "Index not within range"},
+                    new FaultReason("Index out of range"));
             }
 
             acctNo = _database.GetAcctNoByIndex(index);
