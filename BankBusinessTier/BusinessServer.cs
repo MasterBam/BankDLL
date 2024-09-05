@@ -53,5 +53,46 @@ namespace BankBusinessTier
 
             dbServer.GetValuesForEntry(index, out acctNo, out pin, out fName, out lName, out bal, out icon);
         }
+
+        public void GetSearchResult(string search, out uint acctNo, out uint pin, out string fName, out string lName, out int bal, out Bitmap icon)
+        {
+            acctNo = 0;
+            pin = 0;
+            fName = null;
+            lName = null;
+            bal = 0;
+            icon = null;
+
+            int numEntries = dbServer.GetNumEntries();
+
+            for (int i = 0; i < numEntries; i++)
+            {
+                uint acct;
+                uint aPin;
+                string first;
+                string last;
+                int balance;
+                Bitmap pIcon;
+
+                dbServer.GetValuesForEntry(i, out acct, out aPin, out first, out last, out balance, out pIcon);
+                if (last == search)
+                {
+                    acctNo = acct;
+                    pin = aPin;
+                    fName = first; lName = last;
+                    bal = balance;
+                    icon = pIcon;
+                    break;
+                }
+            }
+
+            if (fName == null)
+            {
+                Console.WriteLine("Client attempt to search a non-existent record");
+                throw new FaultException<SearchNotFound>(
+                    new SearchNotFound { Fault = "Record non-existent" },
+                    new FaultReason("Non-existent record"));
+            }
+        }
     }
 }

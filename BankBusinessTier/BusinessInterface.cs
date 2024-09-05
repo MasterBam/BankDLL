@@ -26,5 +26,9 @@ namespace BankBusinessTier
         [OperationContract]
         [FaultContract(typeof(IndexOutOfRange))]
         void GetValuesForEntry(int index, out uint acctNo, out uint pin, out string fName, out string lName, out int bal, out Bitmap icon);
+
+        [OperationContract]
+        [FaultContract(typeof(SearchNotFound))]
+        void GetSearchResult(string search, out uint acctNo, out uint pin, out string fName, out string lName, out int bal, out Bitmap icon);
     }
 }
