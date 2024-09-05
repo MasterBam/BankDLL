@@ -1,4 +1,5 @@
-﻿using BankServer;
+﻿using BankBusinessTier;
+using BankServer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,7 @@ namespace BankClient
 {
     public partial class MainWindow : Window
     {
-        private DatabaseInterface db;
+        private BusinessInterface db;
 
         public MainWindow()
         {
@@ -31,8 +32,8 @@ namespace BankClient
             // is what hides the RPC stuff!
             var tcp = new NetTcpBinding();
             //Set the URL and create the connection!
-            var URL = "net.tcp://localhost:8100/BankDataService";
-            var chanFactory = new ChannelFactory<DatabaseInterface>(tcp, URL);
+            var URL = "net.tcp://localhost:8200/BankBusinessService";
+            var chanFactory = new ChannelFactory<BusinessInterface>(tcp, URL);
             db = chanFactory.CreateChannel();
             // Also, tell me how many entries are in the DB.
             NoItems.Content = "Total Items: " + db.GetNumEntries();

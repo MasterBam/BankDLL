@@ -97,6 +97,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BankBusinessTier\BankBusinessTier.csproj">
+      <Project>{c8741f83-c605-4535-93da-eac9dc02260a}</Project>
+      <Name>BankBusinessTier</Name>
+    </ProjectReference>
     <ProjectReference Include="..\BankServer\BankServer.csproj">
       <Project>{32774A93-CF44-4BDF-99AD-046CB4BF4D19}</Project>
       <Name>BankServer</Name>
