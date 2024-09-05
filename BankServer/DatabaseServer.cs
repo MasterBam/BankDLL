@@ -30,14 +30,6 @@ namespace BankServer
 
         public void GetValuesForEntry(int index, out uint acctNo, out uint pin, out string fName, out string lName, out int bal, out Bitmap icon)
         {
-            if (index < 0 || index >= _database.GetNumRecords())
-            {
-                Console.WriteLine("Client attempt to access entry out of range");
-                throw new FaultException<IndexOutOfRange>(
-                    new IndexOutOfRange { Fault = "Index not within range"},
-                    new FaultReason("Index out of range"));
-            }
-
             acctNo = _database.GetAcctNoByIndex(index);
             pin = _database.GetPINByIndex(index);
             fName = _database.GetFirstNameByIndex(index);
