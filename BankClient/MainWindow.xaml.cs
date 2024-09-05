@@ -100,12 +100,16 @@ namespace BankClient
             try
             {
                 AccountData acct = new AccountData();
-                db.GetSearchResult(this.search, out acct.acctNo, out acct.pin, out acct.firstName, out acct.lastName, out acct.balance, out acct.icon);
+                db.GetSearchResult(search, out acct.acctNo, out acct.pin, out acct.firstName, out acct.lastName, out acct.balance, out acct.icon);
                 return acct;
             }
             catch(FaultException<SearchNotFound> exception)
             {
                 MessageBox.Show(exception.Detail.Fault);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Something went wrong: " + e.Message);
             }
             return null;
         }
