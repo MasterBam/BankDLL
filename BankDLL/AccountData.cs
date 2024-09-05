@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace BankDLL
 {
-    internal class AccountData
+    public class AccountData
     {
         public uint acctNo;
         public uint pin;

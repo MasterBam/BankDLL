@@ -13,9 +13,9 @@
         <TextBox x:Name="acctNoBox" HorizontalAlignment="Left" Height="20" Margin="345,117,0,0" TextWrapping="NoWrap" Text="Account Number" VerticalAlignment="Top" Width="252"/>
         <TextBox x:Name="pinBox" HorizontalAlignment="Left" Height="20" Margin="345,147,0,0" TextWrapping="NoWrap" Text="PIN" VerticalAlignment="Top" Width="252"/>
         <TextBox x:Name="balanceBox" HorizontalAlignment="Left" Height="20" Margin="345,177,0,0" TextWrapping="NoWrap" Text="Balance" VerticalAlignment="Top" Width="252"/>
-        <TextBox x:Name="IndexBox" HorizontalAlignment="Left" Height="20" Margin="293,342,0,0" TextWrapping="Wrap" Text="INDEX" VerticalAlignment="Top" Width="120"/>
-        <Button x:Name="IndexButton" Content="Enter" HorizontalAlignment="Left" Height="20" Margin="436,342,0,0" VerticalAlignment="Top" Width="70" Click="IndexButton_Click"/>
-        <Label x:Name="NoItems" Content="Total Items: " HorizontalAlignment="Left" Margin="293,311,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="IndexBox" HorizontalAlignment="Left" Height="20" Margin="148,342,0,0" TextWrapping="Wrap" Text="INDEX" VerticalAlignment="Top" Width="120"/>
+        <Button x:Name="IndexButton" Content="Enter" HorizontalAlignment="Left" Height="20" Margin="291,342,0,0" VerticalAlignment="Top" Width="70" Click="IndexButton_Click"/>
+        <Label x:Name="NoItems" Content="Total Items: " HorizontalAlignment="Left" Margin="148,311,0,0" VerticalAlignment="Top"/>
         <Rectangle Fill="Black" Margin="398,-123,401,-255" Stroke="Black" Width="1" RenderTransformOrigin="0.5,0.5">
             <Rectangle.RenderTransform>
                 <TransformGroup>
@@ -26,6 +26,10 @@
                 </TransformGroup>
             </Rectangle.RenderTransform>
         </Rectangle>
+
+        <TextBox x:Name="SearchBox" Text="Enter Last Name" HorizontalAlignment="Left" Height="20" Margin="463,342,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="134"/>
+        <Button x:Name="SearchButthon" Content="Search" HorizontalAlignment="Left" Height="20" Margin="623,342,0,0" VerticalAlignment="Top" Width="60" Click="SearchButthon_Click"/>
+        <Label x:Name="statusLabel" Content="" HorizontalAlignment="Left" Height="25" Margin="463,306,0,0" VerticalAlignment="Top" Width="220"/>
 
     </Grid>
 </Window>

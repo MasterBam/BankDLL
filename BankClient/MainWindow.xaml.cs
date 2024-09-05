@@ -1,9 +1,12 @@
 ﻿using BankBusinessTier;
 using BankServer;
+using BankDLL;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Net.NetworkInformation;
+using System.Security.Cryptography;
 using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,12 +20,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml.Linq;
 
 namespace BankClient
 {
     public partial class MainWindow : Window
     {
         private BusinessInterface db;
+        private string search;
 
         public MainWindow()
         {
@@ -53,6 +58,17 @@ namespace BankClient
             }
         }
 
+        private async void SearchButthon_Click(object sender, RoutedEventArgs e)
+        {
+
+            search = SearchBox.Text;
+            Task<AccountData> task = new Task<AccountData>(SearchDB);
+            task.Start();
+            statusLabel.Content = "Searching starts.....";
+            AccountData account = await task;
+            UpdateGui(account);
+            statusLabel.Content = "Searching ends.....";
+        }
 
         private void Load(int index)
         {
@@ -77,6 +93,30 @@ namespace BankClient
                 // If any other fault exceptions are caught
                 MessageBox.Show("A general fault occurred: " + faultEx.Message);
             }
+        }
+
+        private AccountData SearchDB()
+        {
+            try
+            {
+                AccountData acct = new AccountData();
+                db.GetSearchResult(this.search, out acct.acctNo, out acct.pin, out acct.firstName, out acct.lastName, out acct.balance, out acct.icon);
+                return acct;
+            }
+            catch(FaultException<SearchNotFound> exception)
+            {
+                MessageBox.Show(exception.Detail.Fault);
+            }
+            return null;
+        }
+
+        private void UpdateGui(AccountData acct)
+        {
+            fNameBox.Text = acct.firstName;
+            lNameBox.Text = acct.lastName;
+            balanceBox.Text = acct.balance.ToString("C");
+            acctNoBox.Text = acct.acctNo.ToString();
+            pinBox.Text = acct.pin.ToString("D4");
         }
     }
 }

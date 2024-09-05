@@ -101,6 +101,10 @@
       <Project>{c8741f83-c605-4535-93da-eac9dc02260a}</Project>
       <Name>BankBusinessTier</Name>
     </ProjectReference>
+    <ProjectReference Include="..\BankDLL\BankLib.csproj">
+      <Project>{07ebd15b-d02e-4cde-90b9-e7b735745d5c}</Project>
+      <Name>BankLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\BankServer\BankServer.csproj">
       <Project>{32774A93-CF44-4BDF-99AD-046CB4BF4D19}</Project>
       <Name>BankServer</Name>

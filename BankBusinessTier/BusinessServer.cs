@@ -14,6 +14,7 @@ using System.Drawing;
 using System.Linq;
 using System.ServiceModel;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BankBusinessTier
@@ -90,9 +91,11 @@ namespace BankBusinessTier
             {
                 Console.WriteLine("Client attempt to search a non-existent record");
                 throw new FaultException<SearchNotFound>(
-                    new SearchNotFound { Fault = "Record non-existent" },
+                    new SearchNotFound { Fault = $"Record of '{search}' is non-existent" },
                     new FaultReason("Non-existent record"));
             }
+
+            Thread.Sleep(5000);
         }
     }
 }
