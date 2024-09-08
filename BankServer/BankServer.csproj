@@ -49,6 +49,7 @@
     <Compile Include="DatabaseInterface.cs" />
     <Compile Include="DatabaseServer.cs" />
     <Compile Include="IndexOutOfRange.cs" />
+    <Compile Include="InvalidIndexError.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SearchNotFound.cs" />

@@ -19,6 +19,7 @@ namespace BankDLL
     {
         private readonly List<AccountData> _accounts;
         private readonly Dictionary<string, List<int>> _lastNameIndex;
+        private readonly static object _lock = new object();
 
         public static BankDatabase Instance { get; } = new BankDatabase();
 
@@ -36,41 +37,86 @@ namespace BankDLL
 
                 generator.GetNextAccount(out temp.pin, out temp.acctNo, out temp.firstName, out temp.lastName, out temp.balance, out temp.icon);
 
-                _accounts.Add(temp);
-
-                if (!_lastNameIndex.ContainsKey(temp.lastName))
+                lock (_lock)
                 {
-                    _lastNameIndex[temp.lastName] = new List<int>();
+                    _accounts.Add(temp);
+
+                    if (!_lastNameIndex.ContainsKey(temp.lastName))
+                    {
+                        _lastNameIndex[temp.lastName] = new List<int>();
+                    }
+                    _lastNameIndex[temp.lastName].Add(i);
                 }
-                _lastNameIndex[temp.lastName].Add(i);
             }
         }
 
-        public uint GetAcctNoByIndex(int index) => _accounts[index].acctNo;
+        public uint GetAcctNoByIndex(int index)
+        {
+            lock (_lock)
+            {
+                return _accounts[index].acctNo;
+            }
+        }
 
-        public uint GetPINByIndex(int index) => _accounts[index].pin;
+        public uint GetPINByIndex(int index)
+        {
+            lock (_lock)
+            {
+                return _accounts[index].pin;
+            }
+        }
 
-        public string GetFirstNameByIndex(int index) => _accounts[index].firstName;
+        public string GetFirstNameByIndex(int index)
+        {
+            lock (_lock)
+            {
+                return _accounts[index].firstName;
+            }
+        }
 
-        public string GetLastNameByIndex(int index) => _accounts[index].lastName;
+        public string GetLastNameByIndex(int index)
+        {
+            lock (_lock)
+            {
+                return _accounts[index].lastName;
+            }
+        }
 
-        public int GetBalanceByIndex(int index) => _accounts[index].balance;
+        public int GetBalanceByIndex(int index)
+        {
+            lock (_lock)
+            {
+                return _accounts[index].balance;
+            }
+        }
 
         public byte[] GetIconByIndex(int index)
         {
-            ImageConverter img = new ImageConverter();
-            return (byte[])img.ConvertTo(_accounts[index].icon, typeof(byte[]));
+            lock (_lock)
+            {
+                ImageConverter img = new ImageConverter();
+                return (byte[])img.ConvertTo(_accounts[index].icon, typeof(byte[]));
+            }
         }
 
-        public int GetNumRecords() => _accounts.Count;
+        public int GetNumRecords()
+        {
+            lock (_lock)
+            {
+                return _accounts.Count;
+            }
+        }
 
         public int? GetFirstIndexByLastName(string lastName)
         {
-            if (_lastNameIndex.TryGetValue(lastName, out var indices) && indices.Count > 0)
+            lock (_lock)
             {
-                return indices[0]; // Return the first occurrence
+                if (_lastNameIndex.TryGetValue(lastName, out var indices) && indices.Count > 0)
+                {
+                    return indices[0]; // Return the first occurrence
+                }
+                return null; // Or throw an exception if preferred
             }
-            return null; // Or throw an exception if preferred
         }
     }
 }

@@ -25,7 +25,6 @@ using System.IO;
 
 namespace BankClient
 {
-    public delegate int Search(string value);
     public partial class MainWindow : Window
     {
         private BusinessInterface db;
@@ -56,61 +55,34 @@ namespace BankClient
 
         private void IndexButton_Click(object sender, RoutedEventArgs e)
         {
-            if (int.TryParse(IndexBox.Text, out var index))
+            try
             {
-                Load(index);
+                string source = this.GetType().Name + ".IndexButton_Click(object sender, RoutedEventArfs e), line 61";
+                Load(db.GetParsedIndex(IndexBox.Text, source));
             }
-            else
+            catch (FaultException<InvalidIndexError> exception)
             {
-                MessageBox.Show($"\"{IndexBox.Text}\" is not a valid integer...");
+                MessageBox.Show(exception.Detail.Fault);
             }
         }
 
         private async void SearchButthon_Click(object sender, RoutedEventArgs e)
         {
-            // Disable buttons and set text boxes to read-only
-            SearchButton.IsEnabled = false;
-            IndexButton.IsEnabled = false;
-            fNameBox.IsReadOnly = true;
-            lNameBox.IsReadOnly = true;
-            balanceBox.IsReadOnly = true;
-            acctNoBox.IsReadOnly = true;
-            pinBox.IsReadOnly = true;
-
-            // Set progress bar to Marquee (indeterminate mode)
-            searchProgressBar.Visibility = Visibility.Visible;
-            searchProgressBar.IsIndeterminate = true;
-
-            statusLabel.Content = "Searching starts.....";
-
             search = SearchBox.Text;
             Task<int> task = new Task<int>(SearchDB);
             task.Start();
             int account = await task;
 
-            await Task.Delay(5000);
+
             Load(account);
-            statusLabel.Content = "Searching ends.....";
-
-            // Re-enable buttons and set text boxes to editable
-            SearchButton.IsEnabled = true;
-            IndexButton.IsEnabled = true;
-            fNameBox.IsReadOnly = false;
-            lNameBox.IsReadOnly = false;
-            balanceBox.IsReadOnly = false;
-            acctNoBox.IsReadOnly = false;
-            pinBox.IsReadOnly = false;
-
-            // Set progress bar to Continuous (completed mode)
-            searchProgressBar.IsIndeterminate = false;
-            searchProgressBar.Visibility = Visibility.Collapsed;
         }
 
         private void Load(int index)
         {
             try
             {
-                db.GetValuesForEntry(index, out var accNo, out var pin, out var fName, out var lName, out var bal , out var icon);
+                string source = this.GetType().Name + ".Load(int index), line 85";
+                db.GetValuesForEntry(index, source, out var accNo, out var pin, out var fName, out var lName, out var bal, out var icon);
                 fNameBox.Text = fName;
                 lNameBox.Text = lName;
                 balanceBox.Text = bal.ToString("C");
@@ -149,13 +121,54 @@ namespace BankClient
         {
             try
             {
-                return db.GetSearchResult(search);
+                string source = this.GetType().Name + ".SearchDB(string val), line 125";
+                //Disable buttons and set text boxes to read-only
+                SetWaitingState(true);
+                return db.GetSearchResult(search, source);
             }
             catch (FaultException<SearchNotFound> exception)
             {
                 MessageBox.Show(exception.Detail.Fault);
             }
+            finally
+            {
+                //Enable features again
+                SetWaitingState(false);
+            }
             return 0;
+        }
+
+        private void SetWaitingState(bool waiting)
+        {
+            // Use Dispatcher to ensure UI updates are on the main thread
+            Dispatcher.Invoke(() =>
+            {
+                // Set text boxes ReadOnly
+                fNameBox.IsReadOnly = waiting;
+                lNameBox.IsReadOnly = waiting;
+                balanceBox.IsReadOnly = waiting;
+                acctNoBox.IsReadOnly = waiting;
+                pinBox.IsReadOnly = waiting;
+                IndexBox.IsReadOnly = waiting;
+                SearchBox.IsReadOnly = waiting;
+
+                // Disable/enable buttons
+                IndexButton.IsEnabled = !waiting;
+                SearchButton.IsEnabled = !waiting;
+
+                // Show/hide progress bar
+                searchProgressBar.Visibility = waiting ? Visibility.Visible : Visibility.Collapsed;
+                if (waiting)
+                {
+                    statusLabel.Content = "Searching starts.....";
+                    searchProgressBar.IsIndeterminate = true;
+                }
+                else
+                {
+                    statusLabel.Content = "Searching ends";
+                    searchProgressBar.IsIndeterminate = false;
+                }
+            });
         }
     }
 }

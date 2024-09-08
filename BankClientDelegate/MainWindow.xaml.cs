@@ -55,13 +55,14 @@ namespace BankClientDelegate
 
         private void IndexButton_Click(object sender, RoutedEventArgs e)
         {
-            if (int.TryParse(IndexBox.Text, out var index))
+            try
             {
-                Load(index);
+                string source = this.GetType().Name + ".IndexButton_Click(object sender, RoutedEventArfs e), line 61";
+                Load(db.GetParsedIndex(IndexBox.Text, source));
             }
-            else
+            catch (FaultException<InvalidIndexError> exception)
             {
-                MessageBox.Show($"\"{IndexBox.Text}\" is not a valid integer...");
+                MessageBox.Show(exception.Detail.Fault);
             }
         }
 
@@ -69,7 +70,9 @@ namespace BankClientDelegate
         {
             try
             {
-                db.GetValuesForEntry(index, out var accNo, out var pin, out var fName, out var lName, out var bal, out var icon);
+                string source = this.GetType().Name + ".Load(int index), line 72";
+
+                db.GetValuesForEntry(index, source, out var accNo, out var pin, out var fName, out var lName, out var bal, out var icon);
 
                 fNameBox.Dispatcher.Invoke(new Action(() => fNameBox.Text = fName));
                 lNameBox.Dispatcher.Invoke(new Action(() => lNameBox.Text = lName));
@@ -120,7 +123,8 @@ namespace BankClientDelegate
         {
             try
             {
-                return db.GetSearchResult(val);
+                string source = this.GetType().Name + ".SearchDB(string val), line 125";
+                return db.GetSearchResult(val, source);
             }
             catch (FaultException<SearchNotFound> exception)
             {

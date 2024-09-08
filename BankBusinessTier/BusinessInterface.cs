@@ -24,11 +24,15 @@ namespace BankBusinessTier
         int GetNumEntries();
 
         [OperationContract]
+        [FaultContract(typeof(InvalidIndexError))]
+        int GetParsedIndex(string arg, string source);
+
+        [OperationContract]
         [FaultContract(typeof(IndexOutOfRange))]
-        void GetValuesForEntry(int index, out uint acctNo, out uint pin, out string fName, out string lName, out int bal, out byte[] icon);
+        void GetValuesForEntry(int index, string source, out uint acctNo, out uint pin, out string fName, out string lName, out int bal, out byte[] icon);
 
         [OperationContract]
         [FaultContract(typeof(SearchNotFound))]
-        int GetSearchResult(string search);
+        int GetSearchResult(string search, string source);
     }
 }

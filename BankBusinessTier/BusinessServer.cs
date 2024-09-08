@@ -11,7 +11,9 @@ using BankServer;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.ServiceModel;
 using System.Text;
 using System.Threading;
@@ -22,8 +24,11 @@ namespace BankBusinessTier
     [ServiceBehavior(IncludeExceptionDetailInFaults = true, ConcurrencyMode = ConcurrencyMode.Multiple, UseSynchronizationContext = false)]
     internal class BusinessServer : BusinessInterface
     {
-        private DatabaseInterface dbServer;
 
+        private DatabaseInterface dbServer;
+        private static uint LogNumber = 0;
+        private static readonly object _logLock = new object();
+        private static readonly string LogFilePath = "business_log.txt";
 
         public BusinessServer()
         {
@@ -38,16 +43,83 @@ namespace BankBusinessTier
 
             dbServer = channelFactory.CreateChannel();
         }
+
+        // The Log method to be used internally
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        private void Log(string logString, string source)
+        {
+            lock (_logLock)
+            {
+                //Reset logfile
+                if(LogNumber == 0)
+                {
+                    using (StreamWriter writer = new StreamWriter(LogFilePath, false))
+                    {
+                        writer.WriteLine("======== New Log Session Started =======" +
+                                        $"From: {this.GetType().Name}" +
+                                        $"Begins at: {DateTime.Now}");
+                    }
+                }
+
+                LogNumber++;
+                string logEntry = $"\nLog #{LogNumber} - {DateTime.Now}: {logString} {source}";
+
+                // Write the log entry to a file
+                using (StreamWriter writer = new StreamWriter(LogFilePath, true))
+                {
+                    writer.WriteLine(logEntry);
+                }
+
+                // Optionally, write to the console as well
+                Console.WriteLine(logEntry);
+            }
+        }
+
         public int GetNumEntries()
         {
             return dbServer.GetNumEntries();
         }
 
-        public void GetValuesForEntry(int index, out uint acctNo, out uint pin, out string fName, out string lName, out int bal, out byte[] icon)
+        public int GetParsedIndex(string arg, string source)
+        {
+            int correctIndex = 0;
+            string error= string.Empty;
+
+            //Check if the first character is '0' when the string length is greater than 1
+            if (arg.Length > 1 && arg[0] == '0')
+            {
+                error = "InvalidIndexError:: Attempted to enter an index with a leading zero '0'";
+                Log(error, source + "\n             Detected at line 86");
+                throw new FaultException<InvalidIndexError>(
+                    new InvalidIndexError { Fault = $"Index should not start with a leading zero: '{arg}'." },
+                    new FaultReason("Invalid index"));
+            }
+
+            //Check if unkown chars are typed into index box
+            if (int.TryParse(arg, out var index))
+            {
+                correctIndex = index;
+            }
+            else
+            {
+                error = "InvalidIndexError:: An unkown character detected when attempted to parse index";
+                Log(error, source + "\n             Detected at line 96");
+                Console.WriteLine(error);
+                throw new FaultException<InvalidIndexError>(
+                    new InvalidIndexError { Fault = "An invalid index input detected" },
+                    new FaultReason("Invalid index"));
+            }
+
+            return correctIndex;
+        }
+
+        public void GetValuesForEntry(int index, string source, out uint acctNo, out uint pin, out string fName, out string lName, out int bal, out byte[] icon)
         {
             if (index < 0 || index >= dbServer.GetNumEntries())
             {
-                Console.WriteLine("Client attempt to access entry out of range");
+                string error = "IndexOutOfRange:: Client attempt to access entry out of range";
+                Log(error, source + "\n             Detected at line 115");
+                Console.WriteLine(error);
                 throw new FaultException<IndexOutOfRange>(
                     new IndexOutOfRange { Fault = "Index not within range" },
                     new FaultReason("Index out of range"));
@@ -56,13 +128,15 @@ namespace BankBusinessTier
             dbServer.GetValuesForEntry(index, out acctNo, out pin, out fName, out lName, out bal, out icon);
         }
 
-        public int GetSearchResult(string search)
+        public int GetSearchResult(string search, string source)
         {
             int? resultI = dbServer.GetSearch(search);
 
             if (resultI is null)
             {
-                Console.WriteLine("Client attempt to search a non-existent record");
+                string error = "SearchNotFound:: Client attempt to search a non-existent record";
+                Log(error, source + "\n             Detected at line 132");
+                Console.WriteLine(error);
                 throw new FaultException<SearchNotFound>(
                     new SearchNotFound { Fault = $"Record of '{search}' is non-existent" },
                     new FaultReason("Non-existent record"));
