@@ -33,6 +33,7 @@ namespace BankBusinessTier
 
         [OperationContract]
         [FaultContract(typeof(SearchNotFound))]
+        [FaultContract(typeof(InvalidSearch))]
         int GetSearchResult(string search, string source);
     }
 }

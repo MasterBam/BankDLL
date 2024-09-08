@@ -1,4 +1,13 @@
-﻿using BankBusinessTier;
+﻿
+
+/*------------------------------------------------*
+ * Module: BankClientDelegate                     *
+ * Description: The implementation of the delegate*
+ *              utilizing client (Task 2)         *
+ * Author: Jauhar                                 *
+ * ID: 21494299                                   *
+ *------------------------------------------------*/
+using BankBusinessTier;
 using BankServer;
 using System;
 using System.Collections.Generic;
@@ -29,6 +38,7 @@ namespace BankClientDelegate
     {
         private BusinessInterface db;
         private Search search;
+        private string eSource;
 
         public MainWindow()
         {
@@ -47,6 +57,9 @@ namespace BankClientDelegate
             var contextChannel = (IContextChannel)db;
             contextChannel.OperationTimeout = TimeSpan.FromMinutes(5); // Increase the timeout to 5 minutes
 
+            //Set source
+            eSource = $"DelegateClient.{this.GetType().FullName}";
+
             // Also, tell me how many entries are in the DB.
             NoItems.Content = "Total Items: " + db.GetNumEntries();
             Load(0);
@@ -57,7 +70,7 @@ namespace BankClientDelegate
         {
             try
             {
-                string source = this.GetType().Name + ".IndexButton_Click(object sender, RoutedEventArfs e), line 61";
+                string source = this.GetType().Name + ".IndexButton_Click(object sender, RoutedEventArfs e), line 74";
                 Load(db.GetParsedIndex(IndexBox.Text, source));
             }
             catch (FaultException<InvalidIndexError> exception)
@@ -70,7 +83,7 @@ namespace BankClientDelegate
         {
             try
             {
-                string source = this.GetType().Name + ".Load(int index), line 72";
+                string source = eSource + ".Load(int index), line 88";
 
                 db.GetValuesForEntry(index, source, out var accNo, out var pin, out var fName, out var lName, out var bal, out var icon);
 
@@ -117,16 +130,34 @@ namespace BankClientDelegate
             AsyncCallback callback;
             callback = this.OnCompletion;
             IAsyncResult result = search.BeginInvoke(SearchBox.Text, callback, null);
+
+            //Timeout check
+            Task.Delay(TimeSpan.FromSeconds(60)).ContinueWith(_ =>
+            {
+                if (!result.IsCompleted)
+                {
+                    MessageBox.Show("Search operation timed out (time elapsed: 1.00 mins).");
+                    SetWaitingState(false);
+                }
+            });
         }
 
         private int SearchDB(string val)
         {
             try
             {
-                string source = this.GetType().Name + ".SearchDB(string val), line 125";
+                string source = eSource + ".SearchDB(string val), line 150";
                 return db.GetSearchResult(val, source);
             }
+            catch (ArgumentNullException e)
+            {
+                MessageBox.Show($"The search value '{val}' passed through as null: {e.Message}");
+            }
             catch (FaultException<SearchNotFound> exception)
+            {
+                MessageBox.Show(exception.Detail.Fault);
+            }
+            catch (FaultException<InvalidSearch> exception)
             {
                 MessageBox.Show(exception.Detail.Fault);
             }

@@ -1,8 +1,7 @@
-﻿
-/*------------------------------------------------*
- * Module: SearchNotFound                         *
- * Description: Error when there is no mathcing   *
- *              search                            *
+﻿/*------------------------------------------------*
+ * Module: InvalidSearch                          *
+ * Description: Error when there is an attempt to *
+ *              search with non-alphabet chars    *
  * Author: Jauhar                                 *
  * ID: 21494299                                   *
  *------------------------------------------------*/
@@ -17,7 +16,7 @@ using System.Threading.Tasks;
 namespace BankServer
 {
     [DataContract]
-    public class SearchNotFound
+    public class InvalidSearch
     {
         [DataMember]
         public string Fault { get; set; }

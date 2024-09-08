@@ -7,6 +7,7 @@
  *------------------------------------------------*/
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace BankDLL
     public class BankDatabase
     {
         private readonly List<AccountData> _accounts;
-        private readonly Dictionary<string, List<int>> _lastNameIndex;
+        private readonly ConcurrentDictionary<string, List<int>> _lastNameIndex;
         private readonly static object _lock = new object();
 
         public static BankDatabase Instance { get; } = new BankDatabase();
@@ -26,7 +27,7 @@ namespace BankDLL
         private BankDatabase()
         {
             _accounts = new List<AccountData>();
-            _lastNameIndex = new Dictionary<string, List<int>>();
+            _lastNameIndex = new ConcurrentDictionary<string, List<int>>();
 
 
             var generator = new DatabaseGenerator();
@@ -111,7 +112,7 @@ namespace BankDLL
         {
             lock (_lock)
             {
-                if (_lastNameIndex.TryGetValue(lastName, out var indices) && indices.Count > 0)
+                if (lastName != null && _lastNameIndex.TryGetValue(lastName, out var indices) && indices.Count > 0)
                 {
                     return indices[0]; // Return the first occurrence
                 }

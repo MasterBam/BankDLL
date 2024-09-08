@@ -7,6 +7,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
+        <Label x:Name="ClientType" HorizontalAlignment="Center" Margin="0,13,0,0" Content="Delegate Client!" VerticalAlignment="Top"/>
         <Image x:Name="UserIcon" HorizontalAlignment="Left" Height="210" Margin="52,26,0,0" VerticalAlignment="Top" Width="210" OpacityMask="Black"/>
         <TextBox x:Name="fNameBox" HorizontalAlignment="Left" Height="20" Margin="345,57,0,0" TextWrapping="NoWrap" Text="First Name" VerticalAlignment="Top" Width="252"/>
         <TextBox x:Name="lNameBox" HorizontalAlignment="Left" Height="20" Margin="345,87,0,0" TextWrapping="NoWrap" Text="Last Name" VerticalAlignment="Top" Width="252"/>

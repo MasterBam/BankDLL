@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.ServiceModel;
 using System.Text;
@@ -28,7 +29,7 @@ namespace BankBusinessTier
         private DatabaseInterface dbServer;
         private static uint LogNumber = 0;
         private static readonly object _logLock = new object();
-        private static readonly string LogFilePath = "business_log.txt";
+        private readonly string LogFilePath;
 
         public BusinessServer()
         {
@@ -42,6 +43,12 @@ namespace BankBusinessTier
             channelFactory = new ChannelFactory<DatabaseInterface>(tcp, URL);
 
             dbServer = channelFactory.CreateChannel();
+
+            // Set log file path to the BusinessTier project folder
+            string projectFolder = Directory.GetParent(Assembly.GetExecutingAssembly().Location).Parent.Parent.Parent.FullName;
+            LogFilePath = Path.Combine(projectFolder, "BusinessTierLog.txt");
+
+            Log("", "");
         }
 
         // The Log method to be used internally
@@ -51,27 +58,29 @@ namespace BankBusinessTier
             lock (_logLock)
             {
                 //Reset logfile
-                if(LogNumber == 0)
+                if(logString == "")
                 {
                     using (StreamWriter writer = new StreamWriter(LogFilePath, false))
                     {
                         writer.WriteLine("======== New Log Session Started =======" +
-                                        $"From: {this.GetType().Name}" +
-                                        $"Begins at: {DateTime.Now}");
+                                        $"\nFrom: {this.GetType().Name}" +
+                                        $"\nBegins at: {DateTime.Now}");
                     }
                 }
-
-                LogNumber++;
-                string logEntry = $"\nLog #{LogNumber} - {DateTime.Now}: {logString} {source}";
-
-                // Write the log entry to a file
-                using (StreamWriter writer = new StreamWriter(LogFilePath, true))
+                else
                 {
-                    writer.WriteLine(logEntry);
-                }
+                    LogNumber++;
+                    string logEntry = $"\nLog #{LogNumber} - {DateTime.Now}: {logString} {source}";
+                    
+                    //Write the log entry to a file
+                    using (StreamWriter writer = new StreamWriter(LogFilePath, true))
+                    {
+                        writer.WriteLine(logEntry);
+                    }
 
-                // Optionally, write to the console as well
-                Console.WriteLine(logEntry);
+                    //Write to the console as well
+                    Console.WriteLine(logEntry);
+                }
             }
         }
 
@@ -130,19 +139,41 @@ namespace BankBusinessTier
 
         public int GetSearchResult(string search, string source)
         {
-            int? resultI = dbServer.GetSearch(search);
-
-            if (resultI is null)
+            if (string.IsNullOrEmpty(search))
             {
-                string error = "SearchNotFound:: Client attempt to search a non-existent record";
-                Log(error, source + "\n             Detected at line 132");
-                Console.WriteLine(error);
-                throw new FaultException<SearchNotFound>(
-                    new SearchNotFound { Fault = $"Record of '{search}' is non-existent" },
-                    new FaultReason("Non-existent record"));
+                throw new ArgumentNullException(nameof(search));
             }
 
-            return (int)resultI;
+            //Validate that the search term contains only alphabetic characters
+            if (!System.Text.RegularExpressions.Regex.IsMatch(search, @"^[a-zA-Z]+$"))
+            {
+                string error = $"InvalidSearch:: Attempted search with invalid characters: '{search}'";
+                Log(error, source + "\n             Detected at line 148");
+                Console.WriteLine(error);
+                throw new FaultException<InvalidSearch>(
+                    new InvalidSearch { Fault = "Search term contains invalid characters. Only alphabetic characters are allowed." },
+                    new FaultReason("Invalid search term"));
+            }
+
+            int? resultI = null;
+
+            lock (_logLock)
+            {
+                string name = search;
+                resultI = dbServer.GetSearch(name);
+
+                if (resultI is null)
+                {
+                    string error = $"SearchNotFound:: Client attempt to search a non-existent record of '{name}', result index: {resultI}";
+                    Log(error, source + "\n             Detected at line 167");
+                    Console.WriteLine(error);
+                    throw new FaultException<SearchNotFound>(
+                        new SearchNotFound { Fault = $"Record of '{name}' is non-existent" },
+                        new FaultReason("Non-existent record"));
+                }
+
+                return (int)resultI;
+            }
         }
     }
 }

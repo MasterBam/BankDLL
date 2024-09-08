@@ -1,4 +1,12 @@
-﻿using BankBusinessTier;
+﻿
+/*------------------------------------------------*
+ * Module: BankClient                             *
+ * Description: The implementation of the async   *
+ *              utilizing client (Task 3)         *
+ * Author: Jauhar                                 *
+ * ID: 21494299                                   *
+ *------------------------------------------------*/
+using BankBusinessTier;
 using BankServer;
 using BankDLL;
 using System;
@@ -22,6 +30,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml.Linq;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace BankClient
 {
@@ -29,6 +38,7 @@ namespace BankClient
     {
         private BusinessInterface db;
         private string search;
+        private string eSource;
 
         public MainWindow()
         {
@@ -47,6 +57,9 @@ namespace BankClient
             var contextChannel = (IContextChannel)db;
             contextChannel.OperationTimeout = TimeSpan.FromMinutes(5); // Increase the timeout to 5 minutes
 
+            //Set source
+            eSource = $"AsyncClient.{this.GetType().FullName}";
+
             // Also, tell me how many entries are in the DB.
             NoItems.Content = "Total Items: " + db.GetNumEntries();
             Load(0);
@@ -57,7 +70,7 @@ namespace BankClient
         {
             try
             {
-                string source = this.GetType().Name + ".IndexButton_Click(object sender, RoutedEventArfs e), line 61";
+                string source = eSource + ".IndexButton_Click(object sender, RoutedEventArfs e), line 74";
                 Load(db.GetParsedIndex(IndexBox.Text, source));
             }
             catch (FaultException<InvalidIndexError> exception)
@@ -69,19 +82,33 @@ namespace BankClient
         private async void SearchButthon_Click(object sender, RoutedEventArgs e)
         {
             search = SearchBox.Text;
-            Task<int> task = new Task<int>(SearchDB);
-            task.Start();
-            int account = await task;
 
+            // Define the timeout duration
+            TimeSpan timeout = TimeSpan.FromSeconds(60); // Adjust as needed
 
-            Load(account);
+            var searchTask = Task.Run(() => SearchDB());
+            var timeoutTask = Task.Delay(timeout);
+
+            var completedTask = await Task.WhenAny(searchTask, timeoutTask);
+
+            if (completedTask == searchTask)
+            {
+                // The search task completed within the timeout
+                int account = await searchTask;
+                Load(account);
+            }
+            else
+            {
+                // The timeout task completed first
+                MessageBox.Show("The search operation timed out (time elapsed: 1.00 mins).");
+            }
         }
 
         private void Load(int index)
         {
             try
             {
-                string source = this.GetType().Name + ".Load(int index), line 85";
+                string source = eSource + ".Load(int index), line 112";
                 db.GetValuesForEntry(index, source, out var accNo, out var pin, out var fName, out var lName, out var bal, out var icon);
                 fNameBox.Text = fName;
                 lNameBox.Text = lName;
@@ -121,7 +148,7 @@ namespace BankClient
         {
             try
             {
-                string source = this.GetType().Name + ".SearchDB(string val), line 125";
+                string source = eSource + ".SearchDB(string val), line 154";
                 //Disable buttons and set text boxes to read-only
                 SetWaitingState(true);
                 return db.GetSearchResult(search, source);
@@ -129,6 +156,14 @@ namespace BankClient
             catch (FaultException<SearchNotFound> exception)
             {
                 MessageBox.Show(exception.Detail.Fault);
+            }
+            catch (FaultException<InvalidSearch> exception)
+            {
+                MessageBox.Show(exception.Detail.Fault);
+            }
+            catch (ArgumentNullException e)
+            {
+                MessageBox.Show($"The search value '{search}' passed through as null: {e.Message}");
             }
             finally
             {

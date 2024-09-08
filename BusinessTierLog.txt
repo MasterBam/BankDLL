@@ -1,0 +1,18 @@
+======== New Log Session Started =======
+From: BusinessServer
+Begins at: 8/09/2024 11:08:12 PM
+
+Log #1 - 8/09/2024 11:08:23 PM: InvalidSearch:: Attempted search with invalid characters: 'Enter Last Name' MainWindow.SearchDB(string val), line 125
+             Detected at line 148
+
+Log #2 - 8/09/2024 11:08:26 PM: InvalidSearch:: Attempted search with invalid characters: 'Enter Last Name' MainWindow.SearchDB(string val), line 125
+             Detected at line 148
+
+Log #3 - 8/09/2024 11:08:33 PM: InvalidSearch:: Attempted search with invalid characters: 'asd23' MainWindow.SearchDB(string val), line 125
+             Detected at line 148
+
+Log #4 - 8/09/2024 11:08:39 PM: InvalidSearch:: Attempted search with invalid characters: '@#' MainWindow.SearchDB(string val), line 125
+             Detected at line 148
+
+Log #5 - 8/09/2024 11:08:44 PM: InvalidIndexError:: An unkown character detected when attempted to parse index MainWindow.IndexButton_Click(object sender, RoutedEventArfs e), line 61
+             Detected at line 96
