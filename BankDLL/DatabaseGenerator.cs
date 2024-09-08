@@ -56,7 +56,7 @@ namespace BankDLL
 
         private uint GetPIN() => (uint)_random.Next(9999);
         private uint GetAcctNo() => (uint)_random.Next(100000000, 999999999);
-        private int GetBalance() => _random.Next(0, 999999999);
+        private int GetBalance() => _random.Next(0, 999999);
 
         private Bitmap GetIcon() => _icons[_random.Next(_icons.Count)];
 

@@ -21,9 +21,11 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml.Linq;
+using System.IO;
 
 namespace BankClient
 {
+    public delegate int Search(string value);
     public partial class MainWindow : Window
     {
         private BusinessInterface db;
@@ -41,6 +43,10 @@ namespace BankClient
             var URL = "net.tcp://localhost:8200/BankBusinessService";
             var chanFactory = new ChannelFactory<BusinessInterface>(tcp, URL);
             db = chanFactory.CreateChannel();
+
+            // Increase the OperationTimeout for the proxy (client-side)
+            var contextChannel = (IContextChannel)db;
+            contextChannel.OperationTimeout = TimeSpan.FromMinutes(5); // Increase the timeout to 5 minutes
 
             // Also, tell me how many entries are in the DB.
             NoItems.Content = "Total Items: " + db.GetNumEntries();
@@ -60,19 +66,45 @@ namespace BankClient
             }
         }
 
-        //private async void SearchButthon_Click(object sender, RoutedEventArgs e)
-        //{
+        private async void SearchButthon_Click(object sender, RoutedEventArgs e)
+        {
+            // Disable buttons and set text boxes to read-only
+            SearchButton.IsEnabled = false;
+            IndexButton.IsEnabled = false;
+            fNameBox.IsReadOnly = true;
+            lNameBox.IsReadOnly = true;
+            balanceBox.IsReadOnly = true;
+            acctNoBox.IsReadOnly = true;
+            pinBox.IsReadOnly = true;
 
-        //    search = SearchBox.Text;
-        //    Task<int> task = new Task<int>(SearchDB);
-        //    task.Start();
-        //    statusLabel.Content = "Searching starts.....";
-        //    int account = await task;
+            // Set progress bar to Marquee (indeterminate mode)
+            searchProgressBar.Visibility = Visibility.Visible;
+            searchProgressBar.IsIndeterminate = true;
 
-        //    Load(account);
-        //    task.Dispose();
-        //    statusLabel.Content = "Searching ends.....";
-        //}
+            statusLabel.Content = "Searching starts.....";
+
+            search = SearchBox.Text;
+            Task<int> task = new Task<int>(SearchDB);
+            task.Start();
+            int account = await task;
+
+            await Task.Delay(5000);
+            Load(account);
+            statusLabel.Content = "Searching ends.....";
+
+            // Re-enable buttons and set text boxes to editable
+            SearchButton.IsEnabled = true;
+            IndexButton.IsEnabled = true;
+            fNameBox.IsReadOnly = false;
+            lNameBox.IsReadOnly = false;
+            balanceBox.IsReadOnly = false;
+            acctNoBox.IsReadOnly = false;
+            pinBox.IsReadOnly = false;
+
+            // Set progress bar to Continuous (completed mode)
+            searchProgressBar.IsIndeterminate = false;
+            searchProgressBar.Visibility = Visibility.Collapsed;
+        }
 
         private void Load(int index)
         {
@@ -84,9 +116,23 @@ namespace BankClient
                 balanceBox.Text = bal.ToString("C");
                 acctNoBox.Text = accNo.ToString();
                 pinBox.Text = pin.ToString("D4");
-                // Convert to image source
-                UserIcon.Source = Imaging.CreateBitmapSourceFromHBitmap(icon.GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                icon.Dispose();
+
+                // Convert byte array to Bitmap
+                using (var ms = new MemoryStream(icon))
+                {
+                    using (var finalIcon = new Bitmap(ms))
+                    {
+                        // Convert to image source
+                        UserIcon.Source = Imaging.CreateBitmapSourceFromHBitmap(
+                            finalIcon.GetHbitmap(),
+                            IntPtr.Zero,
+                            Int32Rect.Empty,
+                            BitmapSizeOptions.FromEmptyOptions()
+                        );
+                    }
+                }
+
+                IndexBox.Text = index.ToString();
             }
             catch (FaultException<IndexOutOfRange> exception)
             {
@@ -99,28 +145,17 @@ namespace BankClient
             }
         }
 
-        //private int SearchDB()
-        //{
-        //    try
-        //    {
-        //        AccountData acct = new AccountData();
-                
-        //        return db.GetSearchResult(search);
-        //    }
-        //    catch(FaultException<SearchNotFound> exception)
-        //    {
-        //        MessageBox.Show(exception.Detail.Fault);
-        //    }
-        //    return 0;
-        //}
-
-        //private void UpdateGui(AccountData acct)
-        //{
-        //    fNameBox.Text = acct.firstName;
-        //    lNameBox.Text = acct.lastName;
-        //    balanceBox.Text = acct.balance.ToString("C");
-        //    acctNoBox.Text = acct.acctNo.ToString();
-        //    pinBox.Text = acct.pin.ToString("D4");
-        //}
+        private int SearchDB()
+        {
+            try
+            {
+                return db.GetSearchResult(search);
+            }
+            catch (FaultException<SearchNotFound> exception)
+            {
+                MessageBox.Show(exception.Detail.Fault);
+            }
+            return 0;
+        }
     }
 }

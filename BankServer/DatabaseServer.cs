@@ -28,7 +28,7 @@ namespace BankServer
             return _database.GetNumRecords();
         }
 
-        public void GetValuesForEntry(int index, out uint acctNo, out uint pin, out string fName, out string lName, out int bal, out Bitmap icon)
+        public void GetValuesForEntry(int index, out uint acctNo, out uint pin, out string fName, out string lName, out int bal, out byte[] icon)
         {
             acctNo = _database.GetAcctNoByIndex(index);
             pin = _database.GetPINByIndex(index);
@@ -36,6 +36,11 @@ namespace BankServer
             lName = _database.GetLastNameByIndex(index);
             bal = _database.GetBalanceByIndex(index);
             icon = _database.GetIconByIndex(index);
+        }
+
+        public int? GetSearch(string lName)
+        {
+            return _database.GetFirstIndexByLastName(lName);
         }
     }
 }

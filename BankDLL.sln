@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankAsyncClient", "BankClie
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankBusinessTier", "BankBusinessTier\BankBusinessTier.csproj", "{C8741F83-C605-4535-93DA-EAC9DC02260A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankClientDelegate", "BankClientDelegate\BankClientDelegate.csproj", "{6ACDA904-DF1B-4A65-8B71-DE07D124723B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{C8741F83-C605-4535-93DA-EAC9DC02260A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C8741F83-C605-4535-93DA-EAC9DC02260A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C8741F83-C605-4535-93DA-EAC9DC02260A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6ACDA904-DF1B-4A65-8B71-DE07D124723B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6ACDA904-DF1B-4A65-8B71-DE07D124723B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6ACDA904-DF1B-4A65-8B71-DE07D124723B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6ACDA904-DF1B-4A65-8B71-DE07D124723B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
